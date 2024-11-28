@@ -2,6 +2,8 @@ import { DataTypes } from "sequelize"
 import sequelize from "../database/database.js"
 import { Status } from "../constants/index.js"
 import { Task } from "../models/tasks.js"
+import logger from "../logs/logger.js"
+import { encryptText } from "../common/bcrypt.js"
 
 export const User = sequelize.define('users', {
     id: {
@@ -59,3 +61,23 @@ Task.belongsTo(User, {
     targetKey: 'id'
 })
     */
+
+User.beforeCreate(async (user) => {
+    try {
+        user.password = await encryptText(user.password);
+
+    } catch (error){
+        logger.error(error.message);
+        throw new Error('Error al crear la contraseña');
+    }
+});
+
+User.beforeUpdate(async (user) => {
+    try {
+        user.password = await encryptText(user.password);
+
+    } catch (error){
+        logger.error(error.message);
+        throw new Error('Error al comparar la contraseña');
+    }
+});
