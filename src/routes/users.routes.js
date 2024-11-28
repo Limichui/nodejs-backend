@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import usersController from '../controllers/users.controller.js';
+import { authenticateToken } from '../middlewares/authenticate.middleware.js'; 
 
 
 const router = Router();
@@ -8,9 +9,9 @@ router.route('/').get(usersController.getUsers).post(usersController.createUser)
 
 router
     .route('/:id')
-    .get(usersController.getUser)
-    .put(usersController.updateUser)
-    .patch(usersController.activateInactivate)
-    .delete(usersController.deleteUser);
+    .get(authenticateToken, usersController.getUser)
+    .put(authenticateToken, usersController.updateUser)
+    .patch(authenticateToken, usersController.activateInactivate)
+    .delete(authenticateToken, usersController.deleteUser);
 
 export default router; 
