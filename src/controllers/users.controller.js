@@ -7,7 +7,7 @@ async function getUsers(req, res) {
     try {
         const users = await User.findAll({
             attributes: ['id', 'username', 'password', 'status'],
-            order: [['id', 'DESC']],
+            order: [['id', 'ASC']],
             where: {
                 status: Status.ACTIVE,
             }
@@ -17,7 +17,6 @@ async function getUsers(req, res) {
         logger.error('Error getUsers: ' + error);
         res.status(500).json({ message: 'Server error' });
     }
-    //return res.send('Get Users')
 }
 
 async function createUser(req, res) {
