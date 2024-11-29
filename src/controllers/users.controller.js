@@ -117,6 +117,27 @@ async function deleteUser(req, res) {
     }
 }
 
+async function getUserTasks(req, res) {
+    try {
+        const user = await User.findByPk(req.params.id, {
+            attributes: ['username'],
+            include: [
+                {
+                    model: Task,
+                    attributes: ['name', 'done'],
+                },
+            ],
+        });
+        if (!user){
+            return res.status(404).json({ message: 'User not found' })
+        }
+        res.json(user);
+    } catch (error){
+        logger.error('Error getUserTasks: ' + error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
 export default {
     getUsers,
     createUser,
@@ -124,4 +145,5 @@ export default {
     updateUser,
     activateInactivate,
     deleteUser,
+    getUserTasks,
 }
