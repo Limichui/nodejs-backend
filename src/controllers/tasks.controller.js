@@ -11,7 +11,7 @@ async function getTasks(req, res) {
         if (!token) return res.sendStatus(401);
         const secret = jwt.verify(token, process.env.JWT_SECRET); 
         const userId = secret.userId;
-        console.log('userId', userId);
+        //console.log('userId', userId);
         const tasks = await Task.findAll({
             attributes: ['id', 'name', 'done'],
             order: [['id', 'DESC']],
@@ -45,35 +45,34 @@ async function createTask(req, res) {
         res.status(500).json({ message: 'Server error' });
     }
 }
-/*
-async function getUser(req, res) {
+
+async function getTask(req, res) {
     try {
-        const user = await User.findByPk(req.params.id, {
-            attributes: ['username', 'status']
+        const task = await Task.findByPk(req.params.id, {
+            attributes: ['name', 'done']
         });
-        if (!user){
-            return res.status(404).json({ message: 'User not found' })
+        if (!task){
+            return res.status(404).json({ message: 'Task not found' })
         }
-        res.json(user);
+        res.json(task);
     } catch (error){
-        logger.error('Error getUser: ' + error);
+        logger.error('Error getTask: ' + error);
         res.status(500).json({ message: 'Server error' });
     }
 }
 
-async function updateUser(req, res) {
+async function updateTask(req, res) {
     const { id } = req.params;
-    const { username, password } = req.body;
+    const { name } = req.body;
     try {
-        if (!username || !password)
+        if (!name)
             return res
                 .status(400)
-                .json({ message: 'Username or password are required' });
+                .json({ message: 'Name are required' });
         
-                const user = await User.update(
+                const task = await Task.update(
                     {
-                        username,
-                        password,
+                        name,
                     },
                     {
                         where: {
@@ -81,63 +80,66 @@ async function updateUser(req, res) {
                         }
                     }
                 );
-        res.json(user);
+        res.json(task);
     } catch (error){
-        logger.error('Error updateUser: ' + error);
+        logger.error('Error updateTask: ' + error);
         res.status(500).json({ message: 'Server error' });
     }
 }
 
-async function activateInactivate(req, res) {
+async function taskDoneTrueFalse(req, res) {
     const { id } = req.params;
-    const { status } = req.body;
+    const { done } = req.body;
     try {
-        if (!status){
-            return res.status(400).json({ message: 'Status are required' });
+        if (!done){
+            return res.status(400).json({ message: 'The value of done are required' });
         } 
         
-        const user = await User.findByPk(id);
-        if (!user){
-            return res.status(404).json({ message: 'User not found' });
-        }
+        if (done != 'true' && done != 'false' ){
+            return res.status(400).json({ message: 'The done value is must be true or false' });
+        } 
 
-        if (user.status === status){
+        const task = await Task.findByPk(id);
+        if (!task){
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        console.log('Valores Done:', done, task.done);
+        if (task.done === (done === 'true')){
             return res
                 .status(400)
-                .json({ message: 'Status is the same as the curret one' });
+                .json({ message: 'The value of done is the same as the curret one' });
         }
         
-        user.status = status;
-        await user.save();
-        res.json(user);
+        task.done = done;
+        await task.save();
+        res.json(task);
 
     } catch (error){
-        logger.error('Error activeInactive: ' + error);
+        logger.error('Error taskDoneTrueFalse: ' + error);
         res.status(500).json({ message: 'Server error' });
     }
 }
 
-async function deleteUser(req, res) {
+async function deleteTask(req, res) {
     const { id } = req.params;
     try {
-        const user = await User.findByPk(id);
-        if(!user){
-            return res.status(404).json({ message: 'User not found' });
+        const task = await Task.findByPk(id);
+        if(!task){
+            return res.status(404).json({ message: 'Task not found' });
         }
-        await user.destroy();
-        res.json({ message: 'User deleted successfully' });
+        await task.destroy();
+        res.json({ message: 'Task deleted successfully' });
     } catch (error){
-        logger.error('Error getUser: ' + error);
+        logger.error('Error getTask: ' + error);
         res.status(500).json({ message: 'Server error' });
     }
 }
-*/
+
 export default {
     getTasks,
     createTask,
-   /* getUser,
-    updateUser,
-    activateInactivate,
-    deleteUser,
-    */
+    getTask,
+    updateTask,
+    taskDoneTrueFalse,
+    deleteTask,
 }

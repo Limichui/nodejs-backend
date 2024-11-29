@@ -10,12 +10,11 @@ router
     .get(authenticateToken, tasksController.getTasks)
     .post(authenticateToken, tasksController.createTask);
 
-/*
+
 router
     .route('/:id')
-    .get(authenticateToken, usersController.getUser)
-    .put(authenticateToken, usersController.updateUser)
-    .patch(authenticateToken, usersController.activateInactivate)
-    .delete(authenticateToken, usersController.deleteUser);
-*/
+    .get(authenticateToken, tasksController.getTask)
+    .put(authenticateToken, tasksController.updateTask)
+    .patch(authenticateToken, tasksController.taskDoneTrueFalse)
+    .delete(authenticateToken, tasksController.deleteTask);
 export default router; 
